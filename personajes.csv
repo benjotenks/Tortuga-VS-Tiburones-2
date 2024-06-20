@@ -1,0 +1,4 @@
+Personajes;Health;Damage;Movement;Special;Image;Width_Image;Height_Image;
+Tortuga Marina;75;15;2;Tornado Giratorio;Imagenes\Imagenes Personajes\Tortuga Marina Prueba.png;1;1;
+Tortuga Terrestre;150;10;1;Defensa Absoluta;Imagenes\Imagenes Personajes\Tortuga Terrestre Prueba.png;1;1;
+Tiburon Espada;40;20;1.5;Estocada;Imagenes\Imagenes Personajes\Tiburon Espada Prueba.png;1;1;
