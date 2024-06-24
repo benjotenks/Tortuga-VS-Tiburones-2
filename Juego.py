@@ -33,6 +33,16 @@ class Game:
             self.enemigos.append(enemigoa)
             self.enemigos.append(enemigob)
     
+    def end(self):
+        if self.tipo_juego == "un_jugador":
+            font = py.font.Font(None, 100)
+            text = font.render(str(round(self.jugador_1.health/self.jugador_1MaxHealth * 100)) + "%", True, (255, 0, 0))
+            pantalla.screen.blit(text, (0, 0))
+            if self.jugador_1.health <= 0:
+                py.quit()
+                juego.start()
+            
+    
     def update(self):
         pantalla.update()  # Actualiza la pantalla
         if self.tipo_juego == "un_jugador":
@@ -41,6 +51,9 @@ class Game:
                 if self.jugador_1.hitbox_ataque.colliderect(enemigo.hitbox) and self.jugador_1.atacando:
                     self.enemigos.remove(enemigo)
                     break
+                if enemigo.hitbox_ataque.colliderect(self.jugador_1.hitbox) and enemigo.atacando:
+                    self.jugador_1.health -= enemigo.damage * 0.4
+                    enemigo.atacando = False
 
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1.update(self.tipo_juego)  # Actualiza el jugador 1 en el juego de dos jugadores
@@ -51,7 +64,7 @@ class Game:
         for enemigo in self.enemigos:
             enemigo.update(self.tipo_juego, "Jugador 1")
         
-        
+        self.end()
         
     def comenzar(self):
         FPS = 60  # Velocidad de fotogramas por segundo
@@ -60,7 +73,7 @@ class Game:
         if self.tipo_juego == "un_jugador":
             self.jugador_1 = self.menu.player_select("Jugador 1")  # El jugador 1 selecciona su personaje
             self.jugador_1.character_pos_screen()  # Posiciona al jugador 1 en la pantalla
-
+            self.jugador_1MaxHealth = self.jugador_1.health
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1 = self.menu.player_select("Jugador 1")  # El jugador 1 selecciona su personaje
             self.jugador_2 = self.menu.player_select("Jugador 2")  # El jugador 2 selecciona su personaje
