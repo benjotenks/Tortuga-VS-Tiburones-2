@@ -40,7 +40,7 @@ class Game:
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1.update(self.tipo_juego)  # Actualiza el jugador 1 en el juego de dos jugadores
             self.jugador_2.update(self.tipo_juego)  # Actualiza el jugador 2 en el juego de dos jugadores
-        if len(self.enemigos) <= (10 if self.tipo_juego == "un_jugador" else 20):
+        if len(self.enemigos) < (1 if self.tipo_juego == "un_jugador" else 20):
             self.crear_enemigo()
         for enemigo in self.enemigos:
             enemigo.update(self.tipo_juego, "Jugador 1")

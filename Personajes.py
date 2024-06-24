@@ -25,7 +25,7 @@ class Character:
         self.posibles_tipos = []
         self.num_angles = 360
         self.imagen_prerotada = []
-        self.angulo_necesario = (75 if self.__class__.__name__ == "Tortuga" else 90)
+        self.angulo_necesario = (75 if self.__class__.__name__ == "Tortuga" else 345) # En caso de problemas de rotacion revisar este valor
         with open(self.directorio, "r") as arch:
             for index, linea in enumerate(arch):
                 if index != 0:
@@ -65,6 +65,8 @@ class Character:
         self.hitbox.center = self.rect.bottomright
         
         self.circle_center = [n + pantalla.size_rect//4 for n in self.pos]
+        if self.__class__.__name__ == "Tiburon":
+            self.circle_center = [n + pantalla.size_rect//4 for n in self.circle_center]
         self.circle_radius = pantalla.size_rect//2
         
         self.hitbox_ataque = py.Rect(0, 0, pantalla.size_rect//4, pantalla.size_rect//4)
@@ -76,33 +78,7 @@ class Character:
         initial_angle = degrees(atan2(-dy, dx))
         initial_angle_index = int((initial_angle - self.angulo_necesario) * self.num_angles / 360)
         self.imagen = self.imagen_prerotada[initial_angle_index]
-    
-    def rotar(self):
-        mouse_pos = py.mouse.get_pos()
-        dx = mouse_pos[0] - self.rect.centerx
-        dy = mouse_pos[1] - self.rect.centery
-        angle = degrees(atan2(-dy, dx))
-        angle_index = int((angle - self.angulo_necesario) * self.num_angles / 360) 
-        self.imagen = self.imagen_prerotada[angle_index]
-        self.rect = self.imagen.get_rect(center = self.rect.center)
-        self.rect.inflate_ip(-pantalla.size_rect//2, -pantalla.size_rect//2)
-        # Obtener la posición del mouse
-        mouse_x, mouse_y = py.mouse.get_pos()
-
-        # Calcular la distancia entre el centro del círculo y la posición del mouse
-        distance = sqrt((mouse_x - self.circle_center[0]) ** 2 + (mouse_y - self.circle_center[1]) ** 2)
-
-        # Limitar la posición del rectángulo para que permanezca dentro del círculo
-        if distance <= self.circle_radius:
-            self.hitbox_ataque.center = (mouse_x, mouse_y)
-        else:
-            # Si el mouse está fuera del círculo, calcular la posición dentro del círculo
-            angle = atan2(mouse_y - self.circle_center[1], mouse_x - self.circle_center[0])
-            self.hitbox_ataque.center = (
-                int(self.circle_center[0] + self.circle_radius * cos(angle)),
-                int(self.circle_center[1] + self.circle_radius * sin(angle))
-            )
-                                                
+                                          
     def start_relative_pos(self):
         pass
 
@@ -129,6 +105,31 @@ class Tortuga(Character):
         super().__init__(tipo)
         self.jugador = jugador
     
+    def rotar(self):
+        mouse_pos = py.mouse.get_pos()
+        dx = mouse_pos[0] - self.rect.centerx
+        dy = mouse_pos[1] - self.rect.centery
+        angle = degrees(atan2(-dy, dx))
+        angle_index = int((angle - self.angulo_necesario) * self.num_angles / 360) 
+        self.imagen = self.imagen_prerotada[angle_index]
+        self.rect = self.imagen.get_rect(center = self.rect.center)
+        self.rect.inflate_ip(-pantalla.size_rect//2, -pantalla.size_rect//2)
+        # Obtener la posición del mouse
+        mouse_x, mouse_y = py.mouse.get_pos()
+
+        # Calcular la distancia entre el centro del círculo y la posición del mouse
+        distance = sqrt((mouse_x - self.circle_center[0]) ** 2 + (mouse_y - self.circle_center[1]) ** 2)
+
+        # Limitar la posición del rectángulo para que permanezca dentro del círculo
+        if distance <= self.circle_radius:
+            self.hitbox_ataque.center = (mouse_x, mouse_y)
+        else:
+            # Si el mouse está fuera del círculo, calcular la posición dentro del círculo
+            angle = atan2(mouse_y - self.circle_center[1], mouse_x - self.circle_center[0])
+            self.hitbox_ataque.center = (
+                int(self.circle_center[0] + self.circle_radius * cos(angle)),
+                int(self.circle_center[1] + self.circle_radius * sin(angle))
+            )
 
     def mover(self, tipo_juego):
         keys = py.key.get_pressed()
@@ -207,13 +208,13 @@ class Tortuga(Character):
                 else:
                     self.mov_d += 1    
         #print(f"Jugador_ {self.jugador} | self.relative_pos: {self.relative_pos}") # Corregir posicionamiento de jugador 2, aparece 4 recuadros mas a la izquierda de lo que deberia
-   
-    
-        
+       
     def update(self, tipo_juego):
         pantalla.screen.blit(self.imagen, self.rect)
         self.mover(tipo_juego)
         self.rotar()
+
+        # Hitboxes
         py.draw.circle(pantalla.screen, (0, 0, 0), self.circle_center, self.circle_radius, 2)
         py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox)
         py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox_ataque)
@@ -221,26 +222,46 @@ class Tortuga(Character):
 class Tiburon(Character):
     def __init__(self, tipo = "None"):
         super().__init__(tipo)
+        
         self.start = True
+        self.angle_movement = 0
     
+    def mover(self):
+        if self.angle_movement == 359:
+            self.angle_movement = 0
+        else:
+            self.angle_movement += 1
+
+    def rotar(self):
+        #self.rect = self.imagen.get_rect(center = self.rect.bottomright)
+        self.imagen = self.imagen_prerotada[self.angle_movement]
+
     def update(self, tipo_juego = "un_jugador", jugador = "Jugador 1"):
         if tipo_juego == "un_jugador":
             if not self.start:
                 diferencia = [n - pantalla.pos[i] for i, n in enumerate(self.temp)]
-                self.temp = [n for n in pantalla.pos]
+                self.temp = [n for n in pantalla.pos]   # No tocar
                 self.pos[0] -= diferencia[0]
                 self.pos[1] -= diferencia[1]
-                self.circle_center[0] -= diferencia[0]
-                self.circle_center[1] -= diferencia[1]
+                self.circle_center = [self.circle_center[_] - diferencia[_] for _ in range(2)]
+                # self.circle_center[0] -= diferencia[0]
+                # self.circle_center[1] -= diferencia[1]
                 self.hitbox.center = self.circle_center
-                self.rotar()
+                
+                self.mover()
+                #self.rotar()
+                
                 pantalla.screen.blit(self.imagen, self.pos)
+
+                #Hitboxes
                 py.draw.circle(pantalla.screen, (0, 0, 0), self.circle_center, self.circle_radius, 2)
                 py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox)
                 py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox_ataque)
+
             if self.start:
                 self.temp = [n for n in pantalla.pos]
                 self.start = False
+
         if tipo_juego == "dos_jugadores":
             if jugador == "Jugador 1":
                 pass
