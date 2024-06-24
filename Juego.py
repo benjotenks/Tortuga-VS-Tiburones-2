@@ -25,6 +25,7 @@ class Game:
             enemigo = Enemigo("Tiburon Espada")
             enemigo.character_pos_screen()
             self.enemigos.append(enemigo)
+            
         if self.tipo_juego == "dos_jugadores":
             enemigoa = Enemigo("Tiburon Espada")
             enemigob = Enemigo("Tiburon Espada")
@@ -52,9 +53,11 @@ class Game:
                 if self.jugador_1.hitbox_ataque.colliderect(enemigo.hitbox) and self.jugador_1.atacando:
                     self.enemigos.remove(enemigo)
                     break
+                
                 if enemigo.hitbox_ataque.colliderect(self.jugador_1.hitbox) and enemigo.atacando:
-                    self.jugador_1.health -= enemigo.damage * 0.4
+                    self.jugador_1.health -= enemigo.damage * 0.4 # Valor para que el jugador no muera tan rapido
                     enemigo.atacando = False
+                    break
 
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1.update(self.tipo_juego)  # Actualiza el jugador 1 en el juego de dos jugadores
@@ -76,6 +79,7 @@ class Game:
             self.jugador_1 = self.menu.player_select("Jugador 1")  # El jugador 1 selecciona su personaje
             self.jugador_1.character_pos_screen()  # Posiciona al jugador 1 en la pantalla
             self.jugador_1MaxHealth = self.jugador_1.health
+            
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1 = self.menu.player_select("Jugador 1")  # El jugador 1 selecciona su personaje
             self.jugador_2 = self.menu.player_select("Jugador 2")  # El jugador 2 selecciona su personaje
