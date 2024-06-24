@@ -260,13 +260,14 @@ class Tiburon(Character):
         self.hitbox.center = self.circle_center
         self.hitbox_ataque.center = self.circle_center
 
+        # Maneja la porbabilidad de ataque del enemigo
         ataque = randrange(0, 100, 1)
         if ataque == 7 and not self.atacando:
             self.atacando = True
             self.tiempo_fin_ataque = time() + 3  # Establece el tiempo de finalización del ataque
         elif self.atacando:
             if time() >= self.tiempo_fin_ataque:
-                self.atacando = False  # Detiene el ataque si han pasado 10 segundos
+                self.atacando = False  # Detiene el ataque si han pasado 3 segundos
 
         self.angle_movement = (0 if self.angle_movement >= 359 else 359 if self.angle_movement < 0 else self.angle_movement)
         self.pos = [self.pos[_] + mov[_] for _ in range(2)]
@@ -284,17 +285,16 @@ class Tiburon(Character):
         
         self.imagen = self.imagen_prerotada[angle_needed - 90]
         
-        # Calculate the direction towards the center of the screen
+        # calcula la direccion hacia el centro de la pantalla
         dx = center_x - self.circle_center[0]
         dy = center_y - self.circle_center[1]
         
-        # Normalize the direction vector
         magnitude = sqrt(dx ** 2 + dy ** 2)
         if magnitude != 0:
             dx /= magnitude
             dy /= magnitude
 
-        # Calculate the position of the hitbox_ataque
+        # Calcula la posicion de la hitbox de ataque
         hitbox_ataque_x = self.circle_center[0] + dx * self.circle_radius
         hitbox_ataque_y = self.circle_center[1] + dy * self.circle_radius
         

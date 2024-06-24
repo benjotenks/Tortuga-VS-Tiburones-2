@@ -41,12 +41,13 @@ class Game:
             if self.jugador_1.health <= 0:
                 py.quit()
                 juego.start()
-            
     
     def update(self):
         pantalla.update()  # Actualiza la pantalla
         if self.tipo_juego == "un_jugador":
             self.jugador_1.update(self.tipo_juego)  # Actualiza el jugador 1 en el juego de un jugador
+            
+            # Interaccion con HITBOXES
             for enemigo in self.enemigos:
                 if self.jugador_1.hitbox_ataque.colliderect(enemigo.hitbox) and self.jugador_1.atacando:
                     self.enemigos.remove(enemigo)
@@ -64,6 +65,7 @@ class Game:
         for enemigo in self.enemigos:
             enemigo.update(self.tipo_juego, "Jugador 1")
         
+        # Comprobador de vida, tanto como de ver si el jugador ha terminado
         self.end()
         
     def comenzar(self):
