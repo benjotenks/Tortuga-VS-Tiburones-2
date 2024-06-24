@@ -57,7 +57,7 @@ class Character:
             self.pos = pantalla.player_pos_screen(self.jugador)
             self.relative_pos = pantalla.player_relative_pos_screen(self.jugador)
         if self.__class__.__name__ == "Tiburon":
-            self.pos = [0, 100]#[randrange(-500, 500, 100), 0]
+            self.pos = [randrange(-pantalla.map_width, pantalla.map_width, 100), 0] # [0, 100]#
             
         self.rect = self.imagen.get_rect(center = self.pos)
         self.rect.inflate_ip(-pantalla.size_rect//2, -pantalla.size_rect//2)
@@ -245,20 +245,30 @@ class Tiburon(Character):
         dx -= pantalla.size_rect//2 / magnitude
         dy -= pantalla.size_rect//2 / magnitude
         
-        # Set the movement vector towards the center
-        speed = self.movement  # Adjust the speed as needed
+        # dispone el movimiento hacia el centro de la pantalla
+        speed = self.movement  
         mov[0] = dx * speed
         mov[1] = dy * speed
+
         self.circle_center = [self.circle_center[_] + mov[_] for _ in range(2)]
         self.hitbox.center = self.circle_center
         self.hitbox_ataque.center = self.circle_center
+
         self.angle_movement = (0 if self.angle_movement >= 359 else 359 if self.angle_movement < 0 else self.angle_movement)
         self.pos = [self.pos[_] + mov[_] for _ in range(2)]
     
-
     def rotar(self):
         self.rect = self.imagen.get_rect(center = self.rect.bottomright)
-        self.imagen = self.imagen_prerotada[self.angle_movement]
+        
+        center_x = pantalla.screen_width // 2
+        center_y = pantalla.screen_height // 2
+        dx = center_x - self.pos[0]
+        dy = center_y - self.pos[1]
+        
+        angle_needed = int(degrees(atan2(-dy, dx)))
+        angle_needed = (angle_needed + 360) % 360  
+        
+        self.imagen = self.imagen_prerotada[angle_needed - 90]
 
     def update(self, tipo_juego = "un_jugador", jugador = "Jugador 1"):
         if tipo_juego == "un_jugador":
