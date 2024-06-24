@@ -1,6 +1,6 @@
 import pygame as py
 from random import randrange
-from math import degrees, atan2, cos, sin, sqrt
+from math import degrees, atan2, tan, cos, sin, sqrt, radians
 from Pantalla import Window as window
 
 py.init()
@@ -57,7 +57,7 @@ class Character:
             self.pos = pantalla.player_pos_screen(self.jugador)
             self.relative_pos = pantalla.player_relative_pos_screen(self.jugador)
         if self.__class__.__name__ == "Tiburon":
-            self.pos = [randrange(-500, 500, 100), 0]
+            self.pos = [0, 100]#[randrange(-500, 500, 100), 0]
             
         self.rect = self.imagen.get_rect(center = self.pos)
         self.rect.inflate_ip(-pantalla.size_rect//2, -pantalla.size_rect//2)
@@ -73,11 +73,11 @@ class Character:
         self.hitbox_ataque.center = self.circle_center
 
         initial_mouse_x, initial_mouse_y = py.mouse.get_pos()
-        dx = initial_mouse_x - self.rect.centerx
-        dy = initial_mouse_y - self.rect.centery
-        initial_angle = degrees(atan2(-dy, dx))
-        initial_angle_index = int((initial_angle - self.angulo_necesario) * self.num_angles / 360)
-        self.imagen = self.imagen_prerotada[initial_angle_index]
+        # dx = initial_mouse_x - self.rect.centerx
+        # dy = initial_mouse_y - self.rect.centery
+        # # initial_angle = degrees(atan2(-dy, dx))
+        # # initial_angle_index = int((initial_angle - self.angulo_necesario) * self.num_angles / 360)
+        self.imagen = self.imagen_prerotada[0]
                                           
     def start_relative_pos(self):
         pass
@@ -227,13 +227,37 @@ class Tiburon(Character):
         self.angle_movement = 0
     
     def mover(self):
-        if self.angle_movement == 359:
-            self.angle_movement = 0
-        else:
-            self.angle_movement += 1
+        mov = [0, 0]
+        
+        # Calculate the direction towards the center of the screen
+        center_x = pantalla.screen_width // 2
+        center_y = pantalla.screen_height // 2
+        dx = center_x - self.pos[0]
+        dy = center_y - self.pos[1]
+        
+        # Normalize the direction vector
+        magnitude = sqrt(dx ** 2 + dy ** 2)
+        if magnitude != 0:
+            dx /= magnitude
+            dy /= magnitude
+
+        # Encragado de buscar el centro de la pantalla ajustado al jugador
+        dx -= pantalla.size_rect//2 / magnitude
+        dy -= pantalla.size_rect//2 / magnitude
+        
+        # Set the movement vector towards the center
+        speed = self.movement  # Adjust the speed as needed
+        mov[0] = dx * speed
+        mov[1] = dy * speed
+        self.circle_center = [self.circle_center[_] + mov[_] for _ in range(2)]
+        self.hitbox.center = self.circle_center
+        self.hitbox_ataque.center = self.circle_center
+        self.angle_movement = (0 if self.angle_movement >= 359 else 359 if self.angle_movement < 0 else self.angle_movement)
+        self.pos = [self.pos[_] + mov[_] for _ in range(2)]
+    
 
     def rotar(self):
-        #self.rect = self.imagen.get_rect(center = self.rect.bottomright)
+        self.rect = self.imagen.get_rect(center = self.rect.bottomright)
         self.imagen = self.imagen_prerotada[self.angle_movement]
 
     def update(self, tipo_juego = "un_jugador", jugador = "Jugador 1"):
@@ -244,12 +268,10 @@ class Tiburon(Character):
                 self.pos[0] -= diferencia[0]
                 self.pos[1] -= diferencia[1]
                 self.circle_center = [self.circle_center[_] - diferencia[_] for _ in range(2)]
-                # self.circle_center[0] -= diferencia[0]
-                # self.circle_center[1] -= diferencia[1]
                 self.hitbox.center = self.circle_center
                 
                 self.mover()
-                #self.rotar()
+                self.rotar()
                 
                 pantalla.screen.blit(self.imagen, self.pos)
 
