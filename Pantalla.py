@@ -115,9 +115,6 @@ class Window:
         self.handle_events()
         self.handle_screen()
 
-if __name__ == "__main__":
-    test = Window()
-    test.pre_start()
-    test.start()
-    while True:
-        test.update()
+if  __name__ == "__main__":
+    exec(open("Juego.py").read())
+        

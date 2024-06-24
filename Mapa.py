@@ -66,4 +66,6 @@ class Mapa:
         self.lectura_nivel_archivo()
         self.crear_nivel()
 
-
+if  __name__ == "__main__":
+    exec(open("Juego.py").read())
+        

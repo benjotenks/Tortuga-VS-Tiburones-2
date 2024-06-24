@@ -257,3 +257,6 @@ class Menu:  # Define la clase Menu
             self.click = False
             py.display.flip()
                 
+if  __name__ == "__main__":
+    exec(open("Juego.py").read())
+        

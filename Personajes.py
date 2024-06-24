@@ -249,15 +249,5 @@ class Tiburon(Character):
         
         
 if  __name__ == "__main__":
-    a = Character()
-    FPS = 60
-    clock = py.time.Clock()
-    pantalla.start()
-    #jugador_1 = Player("Tortuga Marina")
-    while True:
-        pantalla.update()
-        #jugador_1.update()
-        #print(jugador_1.relative_pos)  ## Posicion del jugador en el mapa
-        py.display.flip()
-        clock.tick(FPS)
+    exec(open("Juego.py").read())
         
