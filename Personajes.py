@@ -7,6 +7,7 @@ py.init()
 pantalla = window()
 class Character:
     def __init__(self, tipo = "None"):
+        self.atacando = False
         self.pos = [0, 0]
         self.relative_pos = [0, 0]
         self.health = 0
@@ -207,6 +208,10 @@ class Tortuga(Character):
                     self.mov_d = 0
                 else:
                     self.mov_d += 1    
+        if py.mouse.get_pressed()[0]:
+            self.atacando = True
+        if not py.mouse.get_pressed()[0]:
+            self.atacando = True
         #print(f"Jugador_ {self.jugador} | self.relative_pos: {self.relative_pos}") # Corregir posicionamiento de jugador 2, aparece 4 recuadros mas a la izquierda de lo que deberia
        
     def update(self, tipo_juego):

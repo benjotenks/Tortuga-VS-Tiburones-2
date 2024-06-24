@@ -37,14 +37,21 @@ class Game:
         pantalla.update()  # Actualiza la pantalla
         if self.tipo_juego == "un_jugador":
             self.jugador_1.update(self.tipo_juego)  # Actualiza el jugador 1 en el juego de un jugador
+            for enemigo in self.enemigos:
+                if self.jugador_1.hitbox_ataque.colliderect(enemigo.hitbox) and self.jugador_1.atacando:
+                    self.enemigos.remove(enemigo)
+                    break
+
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1.update(self.tipo_juego)  # Actualiza el jugador 1 en el juego de dos jugadores
             self.jugador_2.update(self.tipo_juego)  # Actualiza el jugador 2 en el juego de dos jugadores
+
         if len(self.enemigos) < (10 if self.tipo_juego == "un_jugador" else 20):
             self.crear_enemigo()
         for enemigo in self.enemigos:
             enemigo.update(self.tipo_juego, "Jugador 1")
-            #enemigo.update()
+        
+        
         
     def comenzar(self):
         FPS = 60  # Velocidad de fotogramas por segundo
@@ -53,7 +60,7 @@ class Game:
         if self.tipo_juego == "un_jugador":
             self.jugador_1 = self.menu.player_select("Jugador 1")  # El jugador 1 selecciona su personaje
             self.jugador_1.character_pos_screen()  # Posiciona al jugador 1 en la pantalla
-            print(self.jugador_1.pos)
+
         if self.tipo_juego == "dos_jugadores":
             self.jugador_1 = self.menu.player_select("Jugador 1")  # El jugador 1 selecciona su personaje
             self.jugador_2 = self.menu.player_select("Jugador 2")  # El jugador 2 selecciona su personaje
