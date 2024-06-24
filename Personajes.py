@@ -1,5 +1,6 @@
 import pygame as py
 from random import randrange
+from time import time
 from math import degrees, atan2, tan, cos, sin, sqrt, radians
 from Pantalla import Window as window
 
@@ -211,7 +212,7 @@ class Tortuga(Character):
         if py.mouse.get_pressed()[0]:
             self.atacando = True
         if not py.mouse.get_pressed()[0]:
-            self.atacando = True
+            self.atacando = False
         #print(f"Jugador_ {self.jugador} | self.relative_pos: {self.relative_pos}") # Corregir posicionamiento de jugador 2, aparece 4 recuadros mas a la izquierda de lo que deberia
        
     def update(self, tipo_juego):
@@ -222,7 +223,7 @@ class Tortuga(Character):
         # Hitboxes
         py.draw.circle(pantalla.screen, (0, 0, 0), self.circle_center, self.circle_radius, 2)
         py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox)
-        py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox_ataque)
+        py.draw.rect(pantalla.screen, (0, 0, 255) if self.atacando else (255, 0, 0), self.hitbox_ataque)
             
 class Tiburon(Character):
     def __init__(self, tipo = "None"):
@@ -259,6 +260,14 @@ class Tiburon(Character):
         self.hitbox.center = self.circle_center
         self.hitbox_ataque.center = self.circle_center
 
+        ataque = randrange(0, 100, 1)
+        if ataque == 7 and not self.atacando:
+            self.atacando = True
+            self.tiempo_fin_ataque = time() + 3  # Establece el tiempo de finalización del ataque
+        elif self.atacando:
+            if time() >= self.tiempo_fin_ataque:
+                self.atacando = False  # Detiene el ataque si han pasado 10 segundos
+
         self.angle_movement = (0 if self.angle_movement >= 359 else 359 if self.angle_movement < 0 else self.angle_movement)
         self.pos = [self.pos[_] + mov[_] for _ in range(2)]
     
@@ -274,6 +283,22 @@ class Tiburon(Character):
         angle_needed = (angle_needed + 360) % 360  
         
         self.imagen = self.imagen_prerotada[angle_needed - 90]
+        
+        # Calculate the direction towards the center of the screen
+        dx = center_x - self.circle_center[0]
+        dy = center_y - self.circle_center[1]
+        
+        # Normalize the direction vector
+        magnitude = sqrt(dx ** 2 + dy ** 2)
+        if magnitude != 0:
+            dx /= magnitude
+            dy /= magnitude
+
+        # Calculate the position of the hitbox_ataque
+        hitbox_ataque_x = self.circle_center[0] + dx * self.circle_radius
+        hitbox_ataque_y = self.circle_center[1] + dy * self.circle_radius
+        
+        self.hitbox_ataque.center = (hitbox_ataque_x, hitbox_ataque_y)
 
     def update(self, tipo_juego = "un_jugador", jugador = "Jugador 1"):
         if tipo_juego == "un_jugador":
@@ -293,7 +318,7 @@ class Tiburon(Character):
                 #Hitboxes
                 py.draw.circle(pantalla.screen, (0, 0, 0), self.circle_center, self.circle_radius, 2)
                 py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox)
-                py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox_ataque)
+                py.draw.rect(pantalla.screen, (0, 0, 255) if self.atacando else (255, 0, 0), self.hitbox_ataque)
 
             if self.start:
                 self.temp = [n for n in pantalla.pos]
