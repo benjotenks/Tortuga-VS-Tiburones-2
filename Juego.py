@@ -1,3 +1,6 @@
+# Ramo: Análisis y diseño de algoritmos, NRC: 8065
+# Programa hecho por los estudiantes Benjamín Elgueta y Efraín Gómez de ruts 21.495.961-5 y 25.724.661-2 respectivamente
+
 from Personajes import Tortuga as Jugador  # Importa la clase Player desde el módulo Personajes y la renombra como Jugador
 from Personajes import Tiburon as Enemigo
 from Personajes import pantalla  # Importa la variable pantalla desde el módulo Personajes
