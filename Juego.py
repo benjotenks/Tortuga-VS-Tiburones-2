@@ -1,28 +1,48 @@
 # Ramo: Análisis y diseño de algoritmos, NRC: 8065
 # Programa hecho por los estudiantes Benjamín Elgueta y Efraín Gómez de ruts 21.495.961-5 y 25.724.661-2 respectivamente
 
-from Personajes import Tortuga as Jugador  # Importa la clase Player desde el módulo Personajes y la renombra como Jugador
+
 from Personajes import Tiburon as Enemigo
 from Personajes import pantalla  # Importa la variable pantalla desde el módulo Personajes
 from Menus import Menu  # Importa la clase Menu desde el módulo Menus
 import pygame as py  # Importa la biblioteca Pygame y la renombra como py
-from random import randrange
 import socket, threading, sys  # Importa los módulos socket, threading y sys
+"""
+las libreriras socket, threading, sys no estan en uso por motivo de que el 
+multijugador no nos dio tiempo de implementarlo, pero serian las que 
+utilizariamos para lograrlo
+"""
 
 
-
+"""
+La clase Game se encarga de manejar el juego en su totalidad, desde la
+creacion de los personajes, la interaccion entre estos, la creacion de
+enemigos, la actualizacion del juego y la finalizacion del mismo
+"""
 class Game:
+    """
+    La clase __init__() se encarga de inicializar variables importantes para
+    el juego
+    """
     def __init__(self):
         py.init()  # Inicializa Pygame
         self.tipo_juego = "un_jugador"  # Configura el tipo de juego como "un_jugador" por defecto
         self.enemigos = []
         self.generacion_alternante = "un_jugador"
-        
+
+    """
+    La funcion start() se encarga de iniciar el juego, es decir, dirigir al
+    menu principal, seleccionar los personajes y comenzar el juego
+    """  
     def start(self):
         self.menu = Menu()  # Crea una instancia de la clase Menu
         self.tipo_juego = self.menu.start()  # El usuario selecciona el tipo de juego
         self.comenzar()  # Inicia el juego
     
+    """
+    La funcion crear_enemigo() como su nombre indica crea un enemigo
+    y lo incluye a la lista de enemigos del juego
+    """
     def crear_enemigo(self):
         if self.tipo_juego == "un_jugador":
             enemigo = Enemigo("Tiburon Espada")
@@ -37,6 +57,11 @@ class Game:
             self.enemigos.append(enemigoa)
             self.enemigos.append(enemigob)
     
+    """
+    La funcion end() se encarga de verificar si el jugador ha perdido
+    si es asi, se cierra el juego, para iniciar nuevamente desde el
+    menu de inicio
+    """
     def end(self):
         if self.tipo_juego == "un_jugador":
             font = py.font.Font(None, 100)
@@ -46,6 +71,11 @@ class Game:
                 py.quit()
                 juego.start()
     
+    """
+    La funcion update() se encarga de actualizar el juego en cada iteracion
+    inclyendo la pantalla, los jugadores y los enemigos, ademas de verificar
+    si estos han colisionado con las hitboxes de los demas
+    """
     def update(self):
         pantalla.update()  # Actualiza la pantalla
         if self.tipo_juego == "un_jugador":
@@ -75,7 +105,11 @@ class Game:
         
         # Comprobador de vida, tanto como de ver si el jugador ha terminado
         self.end()
-        
+    
+    """
+    la funcion comenzar() se encarga de iniciar el juego, es decir, dirigir al
+    menu principal, seleccionar los personajes y comenzar el juego
+    """
     def comenzar(self):
         FPS = 60  # Velocidad de fotogramas por segundo
         clock = py.time.Clock()  # Crea un objeto Clock para controlar la velocidad de fotogramas
@@ -99,6 +133,9 @@ class Game:
             py.display.flip()  # Actualiza la pantalla
             clock.tick(FPS)  # Controla la velocidad de fotogramas
 
+"""
+Inicia el programa
+"""
 if  __name__ == "__main__":
     juego = Game()  # Crea una instancia de la clase Game
     juego.start()  # Inicia el juego

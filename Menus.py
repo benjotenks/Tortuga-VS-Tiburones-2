@@ -10,6 +10,10 @@ COLORS = {  # Define un diccionario con colores
 }
 
 class Menu:  # Define la clase Menu
+    """
+    La funcion __init__() inicializa los parametros respectivos a los botones
+    que se crearan
+    """
     def __init__(self):  # Constructor de la clase Menu
         py.init()  # Inicializa Pygame
         py.display.set_caption("MENU Tortugas vs Tiburones")  # Establece el título de la ventana
@@ -21,24 +25,42 @@ class Menu:  # Define la clase Menu
         self.click = False  # Variable para detectar clics del mouse
         self.posibles_tipos = []  # Lista para almacenar los tipos de jugadores posibles
         self.jugador = "Jugador 1"  # Define el jugador por defecto como "Jugador 1"
-        
+    
+    """
+    La funcion start() se encarga de iniciar el menu principal del juego
+    """
     def start(self):  # Método para iniciar el menú
         return self.menu_principal()  # Llama al método del menú principal
 
+    """
+    La funcion salir() se encarga de salir del juego
+    """
     def salir(self):  # Método para salir del juego
         self.cierre_ventana()  # Llama al método para cerrar la ventana
-      
+    
+    """
+    La funcion cierre_ventana() se encarga de cerrar la ventana del juego y 
+    salir del programa
+    """  
     def cierre_ventana(self):  # Método para cerrar la ventana del juego
         py.quit()  # Sale de Pygame
         sys.exit()  # Sale del programa
-        
+    
+    """
+    La funcion handle_events() se encarga de manejar los eventos del juego
+    como puede ser el termino de la ejecucion del programa, como de la interaccion
+    con los botones del menu a traves del mouse
+    """
     def handle_events(self):  # Método para manejar eventos
         for event in py.event.get():  # Itera sobre los eventos
             if event.type == py.QUIT:  # Si se presiona el botón de cerrar la ventana
                 self.cierre_ventana()  # Llama al método para cerrar la ventana
             if event.type == py.MOUSEBUTTONDOWN:  # Si se presiona un botón del mouse
                 self.click = True  # Marca que se ha hecho clic
-                
+    """
+    La funcion crear_botones() se encarga de crear los botones del menu,
+    permitiendo al jugador interactuar con ellos y seleccionar una opcion
+    """            
     def crear_botones(self, opciones, tipo_menu = "None"):  # Método para crear botones
         lista = []  # Lista para almacenar los botones
         for key in opciones:  # Itera sobre las opciones
@@ -74,6 +96,11 @@ class Menu:  # Define la clase Menu
             lista.append(temp)  # Agrega la lista temporal a la lista de botones
         return lista  # Retorna la lista de botones
     
+    """
+    La funcion menu_principal() se encarga de dirigir al jugador al menu principal
+    del juego, dando las opciones de un jugador, multijugador y salir, teniendo
+    cada opcion su respectiva accion
+    """
     def menu_principal(self):  # Método para el menú principal
         self.click = False  # Restablece la variable de clic
         opciones = {  # Opciones del menú principal
@@ -115,7 +142,11 @@ class Menu:  # Define la clase Menu
     # Los métodos siguientes tienen una estructura similar al método menu_principal y realizan funciones similares, así que no es necesario comentarlos línea por línea
     # Se maneja el menú de un jugador, el menú de multijugador y la selección de personajes, mostrando botones y permitiendo al jugador interactuar con ellos
 
-
+    """
+    la funcion un_jugador() se encarga de dirigir al jugador a la seccion de un 
+    jugador del menu, dando las opciones de comenzar, volver o salir, teniendo 
+    cada opcion su respectiva accion
+    """
     def un_jugador(self):
         self.click = False
         opciones = {"Comenzar"   : (self.screen_width//2 - self.button_width//2, self.screen_height//8 - self.button_height//8, self.button_width, self.button_height),
@@ -150,7 +181,14 @@ class Menu:  # Define la clase Menu
 
             self.click = False
             py.display.flip()
-            
+
+    """
+    la funcion multijugador() se encarga de dirigir al jugador a la seccion de
+    multijugador, dando las opciones de dos jugadores, dos jugadores lan, volver
+    y salir, es importante destacar que la funcion de Dos Jugadores esta incompleta
+    la funcion de Dos Jugadores Lan no se ha iniciado en lo mas minimo, y que
+    volver y Salir funcionan bien
+    """
     def multijugador(self):
         self.click = False
         opciones = {f"Dos Jugadores"     : ((0), (self.screen_height - self.button_height)//2, self.button_width, self.button_height), 
@@ -189,13 +227,30 @@ class Menu:  # Define la clase Menu
 
             self.click = False
             py.display.flip()
-            
+    
+    """
+    la funcion dos_jugadores() se encarga de seleccionar el modo de juego 
+    Dos Jugadores
+    """
     def dos_jugadores(self):
         return self.dos_jugadores.__name__       
 
+    """
+    La funcion dos_jugadores_lan() se encarga de seleccionar el modo de juego 
+    Dos Jugadores Lan, el cual como se menciono anteriormente no esta correctamente
+    implementado
+    """
     def dos_jugadores_lan(self):
         return self.dos_jugadores_lan.__name__
 
+    """
+    la funcion player_select() se encarga de seleccionar el personaje que se
+    va a utilizar en el juego, permitiendo al jugador seleccionar entre los
+    personajes disponibles, esto es extendible a dos jugadores, y ademas, incluye
+    la opcion de listo(para iniciar el juego), salir, y una opcion que por como 
+    esta estructurado el codigo, no le pudimos implementar la funcion de volver
+    pero que era la idea principal que eso hiciera
+    """
     def player_select(self, jugador):
         self.click = False
         self.jugador = jugador
@@ -256,7 +311,10 @@ class Menu:  # Define la clase Menu
                     pass
             self.click = False
             py.display.flip()
-                
+
+"""
+Inicia el programa
+"""     
 if  __name__ == "__main__":
     exec(open("Juego.py").read())
         

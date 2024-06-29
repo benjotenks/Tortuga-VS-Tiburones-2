@@ -1,12 +1,23 @@
 import pygame as py
 from random import randrange
 from time import time
-from math import degrees, atan2, tan, cos, sin, sqrt, radians
+from math import degrees, atan2, cos, sin, sqrt
 from Pantalla import Window as window
 
 py.init()
 pantalla = window()
+"""
+La clase Charachter se encarga de instanciar las variables de cada personaje,
+ya sea jugador o enemigo, ademas de cargar los datos de los personajes desde
+un archivo csv personajes.csv
+"""
 class Character:
+    """
+    La funcion __init__() se encarga de instanciar las variables de cada
+    personaje, ya sea jugador o enemigo, como sus atributos,
+    ademas de cargar los datos de los personajes desde un archivo csv 
+    personajes.csv
+    """
     def __init__(self, tipo = "None"):
         self.atacando = False
         self.pos = [0, 0]
@@ -37,6 +48,10 @@ class Character:
                         self.posibles_tipos.append(linea[0])
         self.definir_estadisticas()
     
+    """
+    La funcion definir_estadisticas() se encarga de definir las estadisticas del
+    personaje en base a los datos del archivo csv personajes.csv
+    """
     def definir_estadisticas(self):
         with open(self.directorio, "r") as arch:
             for index, linea in enumerate(arch):
@@ -53,7 +68,11 @@ class Character:
                         self.imagen = py.image.load(linea[5])
                         self.imagen = py.transform.scale(self.imagen, (float(linea[6]) * pantalla.size_rect, float(linea[7]) * pantalla.size_rect))
                         self.imagen_prerotada = [py.transform.rotate(self.imagen, angle) for angle in range(self.num_angles)]
-                        
+
+    """
+    la funcion character_pos_screen() se encarga de posicionar al personaje en la pantalla
+    y de posicionarlo en la matriz relativa a la pantalla
+    """     
     def character_pos_screen(self):
         if self.__class__.__name__ == "Tortuga":
             self.pos = pantalla.player_pos_screen(self.jugador)
@@ -74,25 +93,24 @@ class Character:
         self.hitbox_ataque = py.Rect(0, 0, pantalla.size_rect//4, pantalla.size_rect//4)
         self.hitbox_ataque.center = self.circle_center
 
-        initial_mouse_x, initial_mouse_y = py.mouse.get_pos()
-        # dx = initial_mouse_x - self.rect.centerx
-        # dy = initial_mouse_y - self.rect.centery
-        # # initial_angle = degrees(atan2(-dy, dx))
-        # # initial_angle_index = int((initial_angle - self.angulo_necesario) * self.num_angles / 360)
         self.imagen = self.imagen_prerotada[0]
-                                          
-    def start_relative_pos(self):
-        pass
 
+    """
+    La funcion ajustar_atributo() se encarga de ajustar los atributos del personaje
+    en base a una serie de cambios que se deseen realizar, como puede ser
+    algun buff, algun daño, o algun cambio en la velocidad, etc
+    """
     def ajustar_atributo(self, **atributos):
         for key in atributos:
             if key == "health":
                 self.health += atributos[key]
             if key == "damage":
                 self.damage += atributos[key]
-            if key == "movemente":
+            if key == "movement":
                 self.movement += atributos[key]
-    
+    """
+    La funcion __str__() se encarga de imprimir los atributos del personaje
+    """
     def __str__(self):
         print(f"health: {self.health}" + "\n" +
               f"damage: {self.damage}" + "\n" +
@@ -101,12 +119,24 @@ class Character:
               f"tipo: {self.tipo}" + "\n"
               )
         return ""
-    
+
+"""
+La clase Tortuga hereda de la clase Character, y se encarga de instanciar
+las variables de cada jugador, ademas de cargar los datos de los jugadores
+desde un archivo csv personajes.csv
+"""
 class Tortuga(Character):
+    """
+    La funcion __init__() se encarga de instanciar las variables de cada Jugador
+    """
     def __init__(self, tipo = "None", jugador = "Jugador 1"):
         super().__init__(tipo)
         self.jugador = jugador
     
+    """
+    La funcion rotar() se encarga de rotar todo lo que respecta al jugador, 
+    como sus hitboxes y su imagen, en base a la posicion del mouse
+    """
     def rotar(self):
         mouse_pos = py.mouse.get_pos()
         dx = mouse_pos[0] - self.rect.centerx
@@ -132,7 +162,11 @@ class Tortuga(Character):
                 int(self.circle_center[0] + self.circle_radius * cos(angle)),
                 int(self.circle_center[1] + self.circle_radius * sin(angle))
             )
-
+    
+    """
+    La funcion mover() se encarga de mover al jugador en base a las teclas que se
+    presionen, y de atacar si se presiona el click izquierdo del mouse
+    """
     def mover(self, tipo_juego):
         keys = py.key.get_pressed()
         if tipo_juego == "un_jugador":
@@ -214,7 +248,11 @@ class Tortuga(Character):
         if not py.mouse.get_pressed()[0]:
             self.atacando = False
         #print(f"Jugador_ {self.jugador} | self.relative_pos: {self.relative_pos}") # Corregir posicionamiento de jugador 2, aparece 4 recuadros mas a la izquierda de lo que deberia
-       
+    
+    """
+    La funcion update() se encarga de actualizar al jugador en la pantalla
+    y de mostrar sus hitboxes
+    """
     def update(self, tipo_juego):
         pantalla.screen.blit(self.imagen, self.rect)
         self.mover(tipo_juego)
@@ -224,14 +262,26 @@ class Tortuga(Character):
         py.draw.circle(pantalla.screen, (0, 0, 0), self.circle_center, self.circle_radius, 2)
         py.draw.rect(pantalla.screen, (255, 0, 0), self.hitbox)
         py.draw.rect(pantalla.screen, (0, 0, 255) if self.atacando else (255, 0, 0), self.hitbox_ataque)
-            
+
+"""
+La clase Tiburon hereda de la clase Character, y se encarga de instanciar
+las variables de cada enemigo, ademas de cargar los datos de los enemigos
+desde un archivo csv personajes.csv
+"""
 class Tiburon(Character):
+    """
+    La funcion __init__() se encarga de instanciar las variables de cada enemigo
+    """
     def __init__(self, tipo = "None"):
         super().__init__(tipo)
         
         self.start = True
         self.angle_movement = 0
     
+    """
+    La funcion mover() se encarga de mover al enemigo en base a la posicion del
+    jugador, y de atacar si se cumple una condicion (de momento es aleatoria)
+    """
     def mover(self):
         mov = [0, 0]
         
@@ -272,6 +322,10 @@ class Tiburon(Character):
         self.angle_movement = (0 if self.angle_movement >= 359 else 359 if self.angle_movement < 0 else self.angle_movement)
         self.pos = [self.pos[_] + mov[_] for _ in range(2)]
     
+    """
+    La funcion rotar() se encarga de rotar al enemigo en base a la posicion del
+    jugador y de mover sus hitboxes
+    """
     def rotar(self):
         self.rect = self.imagen.get_rect(center = self.rect.bottomright)
         
@@ -300,6 +354,10 @@ class Tiburon(Character):
         
         self.hitbox_ataque.center = (hitbox_ataque_x, hitbox_ataque_y)
 
+    """
+    La funcion update() se encarga de actualizar al enemigo en la pantalla
+    y de mostrar sus hitboxes
+    """
     def update(self, tipo_juego = "un_jugador", jugador = "Jugador 1"):
         if tipo_juego == "un_jugador":
             if not self.start:
@@ -330,7 +388,9 @@ class Tiburon(Character):
             if jugador == "Jugador 2":
                 pass
         
-        
+"""
+Inicia el programa
+"""
 if  __name__ == "__main__":
     exec(open("Juego.py").read())
         
