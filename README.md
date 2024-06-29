@@ -8,6 +8,7 @@ Bienvenido al repositorio oficial del proyecto **Tortuga Vs Tiburones 2**
 
 ## Integrantes del Equipo
 Integrante 1: Benjamin Elgueta -> Correo: b.elguetaprez@uandresbello.edu
+
 Integrante 2: Efraín Goméz -> Correo: e.gomezsilva@uandresbello.edu
 
 ## Comentarios del Equipo
